@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project G4RS - Vehicular Traffic Accidents in Baguio City</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            min-height: 600px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-section {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #3498db;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .features {
+            list-style: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .features li {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .features li:hover {
+            opacity: 1;
+        }
+
+        .features li::before {
+            content: '📊';
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        .auth-section {
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 25px;
+            background: #f8f9fa;
+            padding: 5px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .tab-button.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-container {
+            position: relative;
+        }
+
+        .form {
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #5a67d8;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+
+            .info-section {
+                padding: 40px 30px;
+                text-align: center;
+            }
+
+            .auth-section {
+                padding: 40px 30px;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-container {
+            display: none;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #784ba5 100%);
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .powerbi-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            min-height: 80vh;
+        }
+
+        .powerbi-iframe {
+            width: 100%;
+            height: 80vh;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .embed-instructions {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .embed-instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .embed-instructions code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .placeholder-dashboard {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .placeholder-dashboard h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .demo-btn {
+            display: inline-block;
+            margin: 10px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="info-section">
+            <h1 class="logo">G4RS</h1>
+            <p class="subtitle">Vehicular Traffic Accidents in Baguio City</p>
+            <ul class="features">
+                <li>Comprehensive accident data analysis</li>
+                <li>Real-time traffic monitoring</li>
+                <li>Interactive maps and visualizations</li>
+                <li>Detailed reporting system</li>
+                <li>2016-2025 historical data</li>
+                <li>Location-based insights</li>
+            </ul>
+        </div>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container" id="dashboardContainer">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">G4RS Dashboard - Baguio City Traffic Accidents</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="powerbi-container">
+            <!-- Replace the src below with your Power BI embed URL -->
+            <!-- Method 1: If you have a public Power BI report, use this iframe -->
+            
+            <iframe class="powerbi-iframe" 
+                    src="<iframe title="G4rs" width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiMGMwYWQ1NzktZTM5Ny00NmZiLWE3MGEtNjA2ZGJmZjMzMjVjIiwidCI6ImE1MTVlN2M0LThjZjctNGY5Ny1iMjNiLTk2NDkxNjQ1ZjdmMCIsImMiOjEwfQ%3D%3D&embedImagePlaceholder=true" frameborder="0" allowFullScreen="true"></iframe>" 
+                    frameborder="0" 
+                    allowFullScreen="true">
+            </iframe>
+            
+            
+            <!-- Placeholder content - Replace with your Power BI embed -->
+            <div class="placeholder-dashboard">
+                <h2>Power BI Dashboard Integration</h2>
+                <p>To integrate your Power BI report, follow these steps:</p>
+                
+                <div class="embed-instructions">
+                    <h3>Method 1: Public Report (Publish to Web)</h3>
+                    <ol>
+                        <li>In Power BI Service, open your report</li>
+                        <li>Go to <code>File > Embed report > Publish to web</code></li>
+                        <li>Click <code>Create embed code</code></li>
+                        <li>Copy the iframe code and replace the commented iframe above</li>
+                    </ol>
+                </div>
+                
+                <div class="embed-instructions">
+                    <h3>Method 2: Secure Embed (Private Report)</h3>
+                    <ol>
+                        <li>In Power BI Service, go to <code>File > Embed report > Website or portal</code></li>
+                        <li>Copy the secure embed code</li>
+                        <li>This requires additional authentication setup</li>
+                    </ol>
+                </div>
+                
+                <div class="embed-instructions">
+                    <h3>Method 3: Direct Link</h3>
+                    <ol>
+                        <li>Get your Power BI report URL</li>
+                        <li>Use it as the iframe src (may require authentication)</li>
+                    </ol>
+                </div>
+                
+                <a href="https://app.powerbi.com" target="_blank" class="demo-btn">Open Power BI Service</a>
+                <a href="#" onclick="showSampleDashboard()" class="demo-btn">Show Sample Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+        <div class="auth-section">
+            <div class="auth-tabs">
+                <button class="tab-button active" onclick="switchTab('login')">Log In</button>
+                <button class="tab-button" onclick="switchTab('signup')">Sign Up</button>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                Account created successfully! Please log in.
+            </div>
+
+            <div class="form-container">
+                <form class="form active" id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email or Username</label>
+                        <input type="text" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Access Dashboard</button>
+                    <div class="forgot-password">
+                        <a href="#" onclick="showForgotPassword()">Forgot your password?</a>
+                    </div>
+                </form>
+
+                <form class="form" id="signupForm" onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department/Organization</label>
+                        <input type="text" class="form-input" placeholder="e.g., Traffic Management Office" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-input" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update forms
+            document.querySelectorAll('.form').forEach(form => form.classList.remove('active'));
+            document.getElementById(tab + 'Form').classList.add('active');
+
+            // Hide success message
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            // Simulate login process
+            const submitBtn = event.target.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Logging in...';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                // Hide login container and show dashboard
+                document.querySelector('.container').style.display = 'none';
+                document.getElementById('dashboardContainer').style.display = 'block';
+                
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const password = form.querySelector('input[type="password"]').value;
+            const confirmPassword = form.querySelectorAll('input[type="password"]')[1].value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            const submitBtn = form.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Creating Account...';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                // Show success message and switch to login
+                document.getElementById('successMessage').style.display = 'block';
+                switchTab('login');
+                document.querySelector('.tab-button').classList.add('active');
+                form.reset();
+                
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        }
+
+        function showForgotPassword() {
+            const email = prompt('Please enter your email address:');
+            if (email) {
+                alert('Password reset instructions have been sent to ' + email);
+            }
+        }
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add floating animation to form inputs
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+        });
+
+        function logout() {
+            document.getElementById('dashboardContainer').style.display = 'none';
+            document.querySelector('.container').style.display = 'grid';
+            
+            // Reset forms
+            document.querySelectorAll('form').forEach(form => form.reset());
+            
+            // Show login tab
+            switchTab('login');
+            document.querySelector('.tab-button').classList.add('active');
+        }
+
+        function showSampleDashboard() {
+            // Replace placeholder with a sample dashboard
+            const container = document.querySelector('.powerbi-container');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <h2 style="color: #2c3e50; margin-bottom: 20px;">Sample Dashboard View</h2>
+                    <p style="color: #666; margin-bottom: 30px;">This is where your Power BI report will be displayed.</p>
+                    <div style="background: #f8f9fa; border: 2px dashed #ddd; border-radius: 10px; padding: 60px; margin: 20px 0;">
+                        <h3 style="color: #999; margin-bottom: 15px;">📊 Your Power BI Report Goes Here</h3>
+                        <p style="color: #999;">Replace the iframe src with your Power BI embed URL</p>
+                    </div>
+                    <button onclick="resetPlaceholder()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">Back to Instructions</button>
+                </div>
+            `;
+        }
+
+        function resetPlaceholder() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
