@@ -271,7 +271,7 @@
         .dashboard-container {
             display: none;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #784ba5 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
         }
 
@@ -516,32 +516,64 @@
         function handleLogin(event) {
             event.preventDefault();
             
-            // Simulate login process
-            const submitBtn = event.target.querySelector('.submit-btn');
+            const form = event.target;
+            const emailOrUsername = form.querySelector('input[type="text"]').value;
+            const password = form.querySelector('input[type="password"]').value;
+            const submitBtn = form.querySelector('.submit-btn');
             const originalText = submitBtn.textContent;
             
             submitBtn.textContent = 'Logging in...';
             submitBtn.disabled = true;
 
-            setTimeout(() => {
-                // Hide login container and show dashboard
-                document.querySelector('.container').style.display = 'none';
-                document.getElementById('dashboardContainer').style.display = 'block';
+            // Check if user exists and password matches
+            const users = JSON.parse(localStorage.getItem('g4rs_users') || '{}');
+            const user = users[emailOrUsername.toLowerCase()];
+            
+            if (user && user.password === password) {
+                // Success - store current user and show dashboard
+                localStorage.setItem('g4rs_current_user', JSON.stringify({
+                    email: user.email,
+                    name: user.name,
+                    department: user.department,
+                    loginTime: new Date().toISOString()
+                }));
                 
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            }, 2000);
+                setTimeout(() => {
+                    document.querySelector('.container').style.display = 'none';
+                    document.getElementById('dashboardContainer').style.display = 'block';
+                    updateDashboardHeader(user);
+                    
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    form.reset();
+                }, 1500);
+            } else {
+                // Failed login
+                setTimeout(() => {
+                    alert('Invalid email/username or password. Please check your credentials.');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }, 1500);
+            }
         }
 
         function handleSignup(event) {
             event.preventDefault();
             
             const form = event.target;
+            const name = form.querySelector('input[type="text"]').value;
+            const email = form.querySelector('input[type="email"]').value;
+            const department = form.querySelectorAll('input[type="text"]')[1].value;
             const password = form.querySelector('input[type="password"]').value;
             const confirmPassword = form.querySelectorAll('input[type="password"]')[1].value;
             
             if (password !== confirmPassword) {
                 alert('Passwords do not match!');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long!');
                 return;
             }
 
@@ -551,12 +583,38 @@
             submitBtn.textContent = 'Creating Account...';
             submitBtn.disabled = true;
 
+            // Check if user already exists
+            const users = JSON.parse(localStorage.getItem('g4rs_users') || '{}');
+            
+            if (users[email.toLowerCase()]) {
+                setTimeout(() => {
+                    alert('An account with this email already exists!');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }, 1000);
+                return;
+            }
+
+            // Save new user
+            users[email.toLowerCase()] = {
+                name: name,
+                email: email,
+                department: department,
+                password: password, // In real app, this should be hashed!
+                createdAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('g4rs_users', JSON.stringify(users));
+
             setTimeout(() => {
                 // Show success message and switch to login
                 document.getElementById('successMessage').style.display = 'block';
                 switchTab('login');
                 document.querySelector('.tab-button').classList.add('active');
                 form.reset();
+                
+                // Pre-fill login email for convenience
+                document.querySelector('#loginForm input[type="text"]').value = email;
                 
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
@@ -566,7 +624,74 @@
         function showForgotPassword() {
             const email = prompt('Please enter your email address:');
             if (email) {
-                alert('Password reset instructions have been sent to ' + email);
+                const users = JSON.parse(localStorage.getItem('g4rs_users') || '{}');
+                const user = users[email.toLowerCase()];
+                
+                if (user) {
+                    // In a real app, you'd send an email. For demo, show password.
+                    alert(`Password reset: Your password is "${user.password}"\n\nIn a real application, this would be sent via email.`);
+                } else {
+                    alert('No account found with this email address.');
+                }
+            }
+        }
+
+        function showSampleDashboard() {
+            // Replace placeholder with a sample dashboard
+            const container = document.querySelector('.powerbi-container');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <h2 style="color: #2c3e50; margin-bottom: 20px;">Sample Dashboard View</h2>
+                    <p style="color: #666; margin-bottom: 30px;">This is where your Power BI report will be displayed.</p>
+                    <div style="background: #f8f9fa; border: 2px dashed #ddd; border-radius: 10px; padding: 60px; margin: 20px 0;">
+                        <h3 style="color: #999; margin-bottom: 15px;">📊 Your Power BI Report Goes Here</h3>
+                        <p style="color: #999;">Replace the iframe src with your Power BI embed URL</p>
+                    </div>
+                    <button onclick="resetPlaceholder()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">Back to Instructions</button>
+                    <div style="margin-top: 30px; padding: 20px; background: #e8f4fd; border-radius: 10px; text-align: left;">
+                        <h4 style="color: #2c3e50; margin-bottom: 10px;">🔍 Debug Info</h4>
+                        <p><strong>Registered Users:</strong> <span id="userCount">0</span></p>
+                        <button onclick="showUsers()" style="margin-top: 10px; padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Show All Users</button>
+                        <button onclick="clearUsers()" style="margin-top: 10px; margin-left: 10px; padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear All Users</button>
+                    </div>
+                </div>
+            `;
+            updateUserCount();
+        }
+
+        function resetPlaceholder() {
+            location.reload();
+        }
+
+        function updateUserCount() {
+            const users = JSON.parse(localStorage.getItem('g4rs_users') || '{}');
+            const countElement = document.getElementById('userCount');
+            if (countElement) {
+                countElement.textContent = Object.keys(users).length;
+            }
+        }
+
+        function showUsers() {
+            const users = JSON.parse(localStorage.getItem('g4rs_users') || '{}');
+            if (Object.keys(users).length === 0) {
+                alert('No users registered yet!');
+                return;
+            }
+            
+            let userList = 'Registered Users:\n\n';
+            Object.values(users).forEach(user => {
+                userList += `• ${user.name} (${user.email})\n  Department: ${user.department}\n  Password: ${user.password}\n\n`;
+            });
+            
+            alert(userList);
+        }
+
+        function clearUsers() {
+            if (confirm('Are you sure you want to clear all registered users?')) {
+                localStorage.removeItem('g4rs_users');
+                localStorage.removeItem('g4rs_current_user');
+                alert('All users cleared!');
+                updateUserCount();
             }
         }
 
